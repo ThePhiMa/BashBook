@@ -80,27 +80,31 @@ export default function Home({ initialTodos }) {
   return (
     <main className="max-w-4xl mx-auto py-2">
       <div className="text-center my-5 py-5 gap-4 rounded-lg bg-gray-800 font-mono my-100">
-        <h1 className="text-2xl font-bold">BashBook</h1>
-        <div className="flex flex-col mx-40 mb-7">
-          <div className="my-4">
-            <input className="w-full px-3"
-              type="text"
-              placeholder="Search..."
-              onChange={(e) => setSearch(e.target.value)}
-            />
+        <h1 className="text-5xl font-bold my-5">BashBook</h1>
+        <div className="flex flex-col mx-40 mb-7 justify-between">
+          <div className="flex-justify-between w-full flex items-center">
+            <div className="flex-grow mr-10">
+              <input className="w-full px-3 h-10"
+                type="text"
+                value={search}
+                placeholder="Search..."
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <button className="btn outline-dashed hover:outline w-40" type="button" onClick={() => setSearch('')}>Clear</button>
           </div>
-          <div className="flex justify-between">
+          <div className="flex justify-between mt-5">
             <form onSubmit={handleSubmit} className="w-full flex items-center">
               <div className="flex-grow mr-10">
                 <input
-                  className="w-full px-3"
+                  className="w-full px-3 h-10"
                   type="text"
                   value={input}
                   placeholder="New guest name..."
                   onChange={(e) => setInput(e.target.value)}
                 />
               </div>
-              <button className="btn outline-dashed hover:outline" type="submit">Add Guest</button>
+              <button className="btn outline-dashed hover:outline w-40" type="submit">Add Guest</button>
             </form>
           </div>
         </div>
@@ -119,6 +123,8 @@ export default function Home({ initialTodos }) {
             <tbody>
               {todos
                 .filter((todo) => todo.text.includes(search))
+                .slice()
+                .sort((a, b) => a.completed - b.completed)
                 .map((todo) => (
                   <tr key={todo.id}>
                     <td>
