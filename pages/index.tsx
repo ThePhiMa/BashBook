@@ -1,49 +1,56 @@
 import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import fs from 'fs';
-import path from 'path';
 
-export default function Home({ initialTodos }) {
-  const [todos, setTodos] = useState(initialTodos);
-  const [input, setInput] = useState('');
-  const [search, setSearch] = useState('');
-  const [deleteId, setDeleteId] = useState(null);
-  const [password, setPassword] = useState('');
+type Todo = {
+  id: string;
+  text: string;
+  completed: boolean;
+};
 
-  const predefinedPassword = "google1234"
+export default function Home() {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [input, setInput] = useState<string>('');
+  const [search, setSearch] = useState<string>('');
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [password, setPassword] = useState<string>('');
 
-  const handlePasswordInput = (e) => {
+  const predefinedPassword = "google1234";
+
+  const handlePasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
 
-  const pwdModalRef = useRef();
+  const pwdModalRef = useRef<HTMLDialogElement>(null);
   const openPWDModal = () => {
-    pwdModalRef.current.showModal();
+    if (pwdModalRef.current)
+      pwdModalRef.current.showModal();
   }
 
-  const checkPassword = (e) => {
+  const checkPassword = (e: React.FormEvent) => {
     e.preventDefault();
     if (password === predefinedPassword) {
-      pwdModalRef.current.close();
+      if (pwdModalRef.current)
+        pwdModalRef.current.close();
     } else {
       alert('Incorrect password');
     }
   };
 
-  const delModalRef = useRef();
-  const openDelModal = (id) => {
+  const delModalRef = useRef<HTMLDialogElement>(null);
+  const openDelModal = (id: string) => {
     setDeleteId(id);
-    delModalRef.current.showModal();
+    if (delModalRef.current)
+      delModalRef.current.showModal();
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newTodos = [...todos, { id: uuidv4(), text: input, completed: false }];
     setTodos(newTodos);
     setInput('');
   };
 
-  const handleDelete = (idToDelete) => {
+  const handleDelete = (idToDelete: string) => {
     setTodos(todos.filter((todo) => todo.id !== idToDelete));
 
     fetch('/api/todos', {
@@ -54,34 +61,44 @@ export default function Home({ initialTodos }) {
       body: JSON.stringify({ id: idToDelete }),
     });
 
-    delModalRef.current.close();
+    if (delModalRef.current)
+      delModalRef.current.close();
   };
 
-  const handleToggleCompleted = (idToToggle) => {
+  const handleToggleCompleted = (idToToggle: string) => {
     setTodos(todos.map((todo) =>
       todo.id === idToToggle ? { ...todo, completed: !todo.completed } : todo
     ));
   };
 
   useEffect(() => {
-    fetch('/api/todos', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ todos }),
-    });
+    fetch('/api/todos')
+      .then(response => response.json())
+      .then(data => setTodos(data));
+  }, []);
+
+  useEffect(() => {
+    if (todos.length > 0) {
+      fetch('/api/todos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ todos }),
+      });
+    }
   }, [todos]);
 
   useEffect(() => {
-    pwdModalRef.current.showModal();
+    if (pwdModalRef.current)
+      pwdModalRef.current.showModal();
   }, []);
 
   return (
     <main className="max-w-4xl mx-auto py-2">
       <div className="text-center my-5 py-5 gap-4 rounded-lg bg-gray-800 font-mono my-100">
         <h1 className="text-5xl font-bold my-5">BashBook</h1>
-        <div className="flex flex-col mx-40 mb-7 justify-between">
+        <div className="flex flex-col mx-10 mb-7 justify-between">
           <div className="flex-justify-between w-full flex items-center">
             <div className="flex-grow mr-10">
               <input className="w-full px-3 h-10"
@@ -91,7 +108,7 @@ export default function Home({ initialTodos }) {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <button className="btn outline-dashed hover:outline w-40" type="button" onClick={() => setSearch('')}>Clear</button>
+            <button className="btn outline-dashed hover:outline flex min-w-2xl" type="button" onClick={() => setSearch('')}>Clear</button>
           </div>
           <div className="flex justify-between mt-5">
             <form onSubmit={handleSubmit} className="w-full flex items-center">
@@ -104,7 +121,7 @@ export default function Home({ initialTodos }) {
                   onChange={(e) => setInput(e.target.value)}
                 />
               </div>
-              <button className="btn outline-dashed hover:outline w-40" type="submit">Add Guest</button>
+              <button className="btn outline-dashed hover:outline flex min-w-2xl" type="submit">Add Guest</button>
             </form>
           </div>
         </div>
@@ -114,17 +131,17 @@ export default function Home({ initialTodos }) {
           <table className="table table-zebra table-fixed text-center">
             <thead className="text-gray-400 uppercase bg-gray-800">
               <tr>
-                <th>Is Checked In</th>
+                <th>Checked In</th>
                 <th className="bg-gray-700">Name</th>
-                <th>Check In</th>
-                <th>Delete</th>
+                <th></th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               {todos
                 .filter((todo) => todo.text.includes(search))
                 .slice()
-                .sort((a, b) => a.completed - b.completed)
+                .sort((a, b) => Number(a.completed) - Number(b.completed))
                 .map((todo) => (
                   <tr key={todo.id}>
                     <td>
@@ -141,7 +158,7 @@ export default function Home({ initialTodos }) {
                       {todo.completed ? (
                         <button className="btn text-red-800 bg-gray-800" onClick={() => handleToggleCompleted(todo.id)}>Check Out</button>
                       ) : (
-                        <button className="btn text-green-500 bg-gray-800" onClick={() => handleToggleCompleted(todo.id)}>Check In</button>
+                        <button className="btn text-green-500 bg-gray-700" onClick={() => handleToggleCompleted(todo.id)}>Check In</button>
                       )
                       }
                     </td>
@@ -157,7 +174,7 @@ export default function Home({ initialTodos }) {
               <h3 className="font-bold text-lg">Hello!</h3>
               <p className="py-4">Do you want to delete this entry?</p>
               <div className="modal-action flex justify-between">
-                <button className="btn bg-red-800" onClick={() => handleDelete(deleteId)}>Delete</button>
+                <button className="btn bg-red-800" onClick={() => { if (deleteId) handleDelete(deleteId) }}>Delete</button>
                 <form method="dialog">
                   <button className="btn bg-gray-700">Cancel</button>
                 </form>
@@ -179,13 +196,13 @@ export default function Home({ initialTodos }) {
   );
 }
 
-export async function getServerSideProps() {
-  const filePath = path.join(process.cwd(), 'db.json');
-  const todos = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+// export async function getServerSideProps() {
+//   const filePath = path.join(process.cwd(), 'db.json');
+//   const todos = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
-  return {
-    props: {
-      initialTodos: todos,
-    },
-  };
-}
+//   return {
+//     props: {
+//       initialTodos: todos,
+//     },
+//   };
+// }

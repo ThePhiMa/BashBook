@@ -15,4 +15,7 @@ export default function handler(req, res) {
         fs.writeFileSync(filePath, JSON.stringify(updatedTodos));
         res.status(200).json({ message: 'Deleted' });
     }
+    else {
+        res.status(200).json(todos);
+    }
 }
