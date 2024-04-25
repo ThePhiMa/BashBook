@@ -1,5 +1,18 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## BashBook
+**BashBook** is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+The basic idea for me was to get back into web development and check out how it has evolved over the last few years.
+Plus, I desperatly needed a simple guest list app for my little sisters 18th and all the existing apps where either way to overloaded or too expensive.
+The features are:
+- Add and delete items to the list
+- Mark and unmark items as "checked in"
+- Is needed, it also contains a **very** simple password modal which pops up at load.
+
+If IONOS has a good day and my 1$ vps is not down again, you can check out a running version at ['here'](http://194.164.56.77:3000/)
+
+Oh, and I released it under the Apache 2.0 license, but you are free to use this code as you want. :)
+
+Heres the official tutorial from next.js to get this project running.
 ## Getting Started
 
 First, run the development server:
