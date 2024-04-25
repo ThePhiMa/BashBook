@@ -89,10 +89,11 @@ export default function Home() {
     }
   }, [todos]);
 
-  useEffect(() => {
-    if (pwdModalRef.current)
-      pwdModalRef.current.showModal();
-  }, []);
+  // Uncomment to activate password modal after load.
+  // useEffect(() => {
+  //   if (pwdModalRef.current)
+  //     pwdModalRef.current.showModal();
+  // }, []);
 
   return (
     <main className="max-w-4xl mx-auto py-2">
@@ -195,14 +196,3 @@ export default function Home() {
     </main >
   );
 }
-
-// export async function getServerSideProps() {
-//   const filePath = path.join(process.cwd(), 'db.json');
-//   const todos = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-
-//   return {
-//     props: {
-//       initialTodos: todos,
-//     },
-//   };
-// }
