@@ -9,6 +9,7 @@ The features are:
 - Is needed, it also contains a **very** simple password modal which pops up at load.
 
 If IONOS has a good day and my 1$ vps is not down again, you can check out a running version at ['here'](http://194.164.56.77:3000/) (Password is "google1234")
+
 ![BashBook Screenshot](https://notenoughsleep.eu/files/BashBook_Screen1.png)
 
 Oh, and I released it under the Apache 2.0 license, but you are free to use this code as you want. :)
